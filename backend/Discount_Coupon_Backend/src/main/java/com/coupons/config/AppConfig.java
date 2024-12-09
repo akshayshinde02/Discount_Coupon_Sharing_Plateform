@@ -3,6 +3,7 @@ package com.coupons.config;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -26,6 +27,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @Configuration
 @EnableWebSecurity
 public class AppConfig {
+    @Autowired
+    private OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
@@ -33,14 +36,18 @@ public class AppConfig {
         http.sessionManagement(Management -> Management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(Authorize -> Authorize.requestMatchers("/admin/**").hasRole("ADMIN")
         .requestMatchers("/api/public/**").permitAll()
-        .requestMatchers("/api/user/**").authenticated()
+        .requestMatchers("/api/**").authenticated()
         .anyRequest().permitAll())
         .addFilterBefore(new JwtTokenValidater(), BasicAuthenticationFilter.class)
         .csrf(csrf-> csrf.disable())
         .cors(cors-> cors.configurationSource(corsConfigurationSource()))
         .oauth2Login(oauth2login->{
-            oauth2login.successHandler((request, response, authentication)->response.sendRedirect("/profile"));
+            // oauth2login.loginPage("http://localhost:3000/login");
+            oauth2login.successHandler(oAuthAuthenticationSuccessHandler);
         })
+        // .oauth2Login(
+        // Customizer.withDefaults()
+        // )
         .httpBasic()
         .and()
         .formLogin();
