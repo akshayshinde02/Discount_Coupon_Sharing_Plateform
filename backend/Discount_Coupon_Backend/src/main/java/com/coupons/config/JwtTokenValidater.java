@@ -5,13 +5,14 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.coupons.exceptions.InvalidTokenException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -48,7 +49,7 @@ public class JwtTokenValidater extends OncePerRequestFilter{
 
 
                 } catch (Exception e) {
-                     throw new BadCredentialsException("Invalid Token");
+                     throw new InvalidTokenException("Invalid or Expired Token");
                 }
             }
 

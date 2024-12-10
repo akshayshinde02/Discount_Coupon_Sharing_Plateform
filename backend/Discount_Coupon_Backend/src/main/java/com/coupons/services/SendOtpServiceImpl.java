@@ -4,9 +4,11 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.coupons.exceptions.OTPException;
 import com.coupons.models.OtpVerification;
 import com.coupons.repositories.OtpRepository;
 
@@ -53,15 +55,18 @@ public class SendOtpServiceImpl implements SendOtpService {
     }
 
     @Override
-    public boolean verifyOTP(String email, String otp) {
+    public boolean verifyOTP(String email, String otp) throws OTPException {
         
+    try {
         OtpVerification otpRecord = otpRepository.findByEmailAndIsUsedFalse(email);
 
+        System.out.println(otpRecord);
+
         if (otpRecord == null) {
-            throw new RuntimeException("OTP not found for email: " + email);
+            throw new OTPException("Please resend otp, email not found or OTP might be used earlier: " + email);
         }
         if (otpRecord.isExpired()) {
-            throw new RuntimeException("OTP has expired. Please request a new one.");
+            throw new OTPException("OTP has expired. Please request a new one.");
         }
         
         boolean isValid = new BCryptPasswordEncoder().matches(otp, otpRecord.getOtpHash());
@@ -72,6 +77,11 @@ public class SendOtpServiceImpl implements SendOtpService {
         }
 
         return isValid;
+        } catch (IncorrectResultSizeDataAccessException e) {
+        throw new OTPException("Multiple unused OTPs found for the email: " + email);
+    } catch (Exception e) {
+        throw new OTPException(e.getMessage());
+    }
     }
 
 }

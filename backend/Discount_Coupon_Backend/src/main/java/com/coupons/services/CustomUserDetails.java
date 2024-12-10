@@ -23,7 +23,8 @@ public class CustomUserDetails implements UserDetailsService{
         
         User user = userRepository.findByEmail(username);
         if(user == null) {
-			throw new UsernameNotFoundException("user not found with email "+username);
+			throw new UsernameNotFoundException("Invalid email or user does not exist");
+    
 		}
 
         List<SimpleGrantedAuthority> authorities = user.getRole().getAuthorities();

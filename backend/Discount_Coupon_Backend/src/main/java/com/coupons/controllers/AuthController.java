@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.coupons.config.JwtProvider;
 import com.coupons.enums.AccountStatus;
 import com.coupons.enums.UserRole;
+import com.coupons.exceptions.EmailServiceException;
+import com.coupons.exceptions.OTPException;
 import com.coupons.exceptions.UserException;
 import com.coupons.models.OtpVerification;
 import com.coupons.models.User;
@@ -66,7 +68,7 @@ public class AuthController {
     private OtpRepository otpRepository;
 
     @PostMapping("/send-otp")
-    public ResponseEntity<String> sentOtp(@RequestBody OtpRequest request) throws UserException{
+    public ResponseEntity<String> sentOtp(@RequestBody OtpRequest request) throws UserException,EmailServiceException{
 
         String email = request.getEmail();
         email = email.trim();
@@ -76,10 +78,8 @@ public class AuthController {
             throw new UserException("Email Is Already Used With Another Account");
         }
 
-         // Otp Verification
+        // Otp Verification
        String otp = sendOtpService.generateAndSaveOTP(email);
-    //    System.out.println("otp-----------------------------------------"+otp);
-    //    System.out.println("Received email: [" + email + "]");
 
        emailService.sendEmailWithOTP(email, otp);
        
@@ -88,13 +88,13 @@ public class AuthController {
     }
 
     @PostMapping("/verify-otp")
-    public ResponseEntity<String> verifyOtp(@RequestBody OtpVerificationRequest request) throws UserException{
+    public ResponseEntity<String> verifyOtp(@RequestBody OtpVerificationRequest request) throws OTPException{
 
         boolean isValid = sendOtpService.verifyOTP(request.getEmail(),request.getOtp());
 
 
         if(!isValid){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired OTP");
+            throw new OTPException("Invalid OTP");
         }
        
        return ResponseEntity.ok("Otp verified successfully !!");
@@ -123,6 +123,10 @@ public class AuthController {
         Optional<OtpVerification> verifiedUser = otpRepository.findByEmailIgnoreCase(email);
         
         System.out.println("2------------------------------");
+
+        if (verifiedUser.isEmpty() || !verifiedUser.get().getIsUsed()) {
+            throw new UserException("Email verification is required before signing up");
+        }
         
 
        User creatUser = User.builder()
@@ -134,14 +138,10 @@ public class AuthController {
             .role(UserRole.USER)           // Assign default role if applicable
             .accountStatus(AccountStatus.ACTIVE) // Assign default account status if applicable
             .isDeleted(false)
+            .isverified(true)
             .build();
 
-            if(verifiedUser.isPresent()){
-
-                creatUser.setIsverified(true);
             
-            }
-
             userRepository.save(creatUser);
             
             Authentication authentication = new UsernamePasswordAuthenticationToken(email, password);
@@ -165,7 +165,7 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthResponse> signinHandler(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<AuthResponse> signinHandler(@RequestBody LoginRequest loginRequest) throws UserException{
 
         String username = loginRequest.getEmail();
         String password = loginRequest.getPassword();
@@ -176,6 +176,13 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         User user = userRepository.findByEmail(username);
+        if (user == null) {
+            throw new UserException("Invalid email or password");
+        }
+    
+        if (!user.isIsverified()) {
+            throw new UserException("Email verification is required to sign in");
+        }
 
         String token = jwtProvider.generateToken(authentication);
 
