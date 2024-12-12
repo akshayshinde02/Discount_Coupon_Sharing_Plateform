@@ -41,6 +41,13 @@ public class GlobleException {
         return new ResponseEntity<ErrorDetails>(err,HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<ErrorDetails> tokenExceptionHandler(TokenException ee, WebRequest req){
+
+        ErrorDetails err = new ErrorDetails(ee.getMessage(),req.getDescription(false),LocalDateTime.now());
+        return new ResponseEntity<>(err,HttpStatus.BAD_REQUEST);
+    }
+    
     @ExceptionHandler(EmailServiceException.class)
     public ResponseEntity<ErrorDetails> emailServiceExceptionHandler(EmailServiceException ee, WebRequest req){
 

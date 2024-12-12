@@ -8,6 +8,8 @@ import com.coupons.enums.AccountStatus;
 import com.coupons.enums.OathProvider;
 import com.coupons.enums.SignupMethod;
 import com.coupons.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -33,7 +35,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User{
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +46,8 @@ public class User{
     private String email;
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserToken> tokens;
 
     @Enumerated(value = EnumType.STRING)
@@ -58,13 +61,13 @@ public class User{
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
-    
-    private boolean isverified=false;
-    private String badge="Normal";
-    private String level="Basic";
-    private Long points=0L;
-    private Long coupenUploadedCount=0L;
-    private Long coupenRedemedCount=0L;
+
+    private boolean isverified = false;
+    private String badge = "Normal";
+    private String level = "Basic";
+    private Long points = 0L;
+    private Long coupenUploadedCount = 0L;
+    private Long coupenRedemedCount = 0L;
 
     @Enumerated(value = EnumType.STRING)
     private AccountStatus accountStatus;
@@ -81,10 +84,9 @@ public class User{
 
     @Embedded
     @ElementCollection
-    @CollectionTable(name="payment_information",joinColumns = @JoinColumn(name="user_id"))
-    private List<PaymentInformation> paymentInformation=new ArrayList<>();
+    @CollectionTable(name = "payment_information", joinColumns = @JoinColumn(name = "user_id"))
+    private List<PaymentInformation> paymentInformation = new ArrayList<>();
 
     private LocalDateTime createdAt;
-    
-    
+
 }
