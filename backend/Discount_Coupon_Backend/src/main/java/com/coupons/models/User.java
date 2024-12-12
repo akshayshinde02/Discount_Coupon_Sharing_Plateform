@@ -73,6 +73,7 @@ public class User {
     private AccountStatus accountStatus;
     private boolean isDeleted = false;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Coupon> coupons = new ArrayList<>();
 

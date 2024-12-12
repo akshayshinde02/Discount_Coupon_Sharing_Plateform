@@ -3,10 +3,13 @@ package com.coupons.models;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.coupons.enums.CouponStatus;
+import com.coupons.enums.PaymentStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -32,8 +35,11 @@ public class Coupon {
 
     private String couponName;
     private String couponDescription;
+    private String category;
     private int couponDiscount;
-    private Date expirationDate;
+    // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate expirationDate;
+    private PaymentStatus paymentStatus;
 
     @JsonIgnore
     private String couponCode;
@@ -48,10 +54,9 @@ public class Coupon {
     private Favourite favorite;
 
     @ManyToOne
+    @JsonBackReference
     private User user;    
 
-    @ManyToOne
-    private Category category;
 
     private LocalDateTime createdAt;
 
