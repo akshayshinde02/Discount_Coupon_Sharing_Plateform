@@ -38,7 +38,7 @@ public class CouponServiceImpl implements CouponService {
             Coupon coupon = new Coupon();
             coupon.setCouponName(couponRequest.getCouponName());
             coupon.setCouponDescription(couponRequest.getCouponDescription());
-            coupon.setCouponDiscount(couponRequest.getCouponDiscount());
+            coupon.setPrice(couponRequest.getPrice());
             coupon.setExpirationDate(couponRequest.getExpirationDate());
             coupon.setCouponCode(passwordEncoder.encode(couponRequest.getCouponCode()));
             coupon.setCategory(couponRequest.getCategoryName());
@@ -89,7 +89,7 @@ public class CouponServiceImpl implements CouponService {
             Coupon coupon = getSingleCoupon(couponId);
             coupon.setCouponName(couponRequest.getCouponName());
             coupon.setCouponDescription(couponRequest.getCouponDescription());
-            coupon.setCouponDiscount(couponRequest.getCouponDiscount());
+            coupon.setPrice(couponRequest.getPrice());
             coupon.setExpirationDate(couponRequest.getExpirationDate());
             coupon.setCouponCode(passwordEncoder.encode(couponRequest.getCouponCode()));
             coupon.setCategory(couponRequest.getCategoryName());
@@ -164,16 +164,16 @@ public class CouponServiceImpl implements CouponService {
         return coupons;
     }
 
-    @Override
-    public List<Coupon> getDiscountCoupons(int discount) throws CouponException {
+    // @Override
+    // public List<Coupon> getDiscountCoupons(int discount) throws CouponException {
        
-        List<Coupon> coupons =  couponRepository.findAllWithDiscountGreaterThanEqual(discount);
-        if(coupons.isEmpty()){
-            throw new CouponException("No coupon found for discount!");
-        }
+    //     List<Coupon> coupons =  couponRepository.findAllWithDiscountGreaterThanEqual(discount);
+    //     if(coupons.isEmpty()){
+    //         throw new CouponException("No coupon found for discount!");
+    //     }
 
-        return coupons;
-    }
+    //     return coupons;
+    // }
 
     @Override
     public Optional<Coupon> getCouponsFromCouponCode(String couponCode) throws CouponException {
@@ -186,16 +186,16 @@ public class CouponServiceImpl implements CouponService {
         return coupons;
     }
 
-    @Override
-    public List<Coupon> getCouponsFavoritedByUser(Long userId) throws CouponException {
+    // @Override
+    // public List<Coupon> getCouponsFavoritedByUser(Long userId) throws CouponException {
        
-        List<Coupon> coupons =  couponRepository.findAllFavoritedByUser(userId);
-        if(coupons.isEmpty()){
-            throw new CouponException("No coupon found for user Id!");
-        }
+    //     List<Coupon> coupons =  couponRepository.findAllFavoritedByUser(userId);
+    //     if(coupons.isEmpty()){
+    //         throw new CouponException("No coupon found for user Id!");
+    //     }
 
-        return coupons;
-    }
+    //     return coupons;
+    // }
 
     @Override
     public List<Coupon> getCouponsByPaymentStatus(Long couponId, User user, PaymentStatus paymentStatus)

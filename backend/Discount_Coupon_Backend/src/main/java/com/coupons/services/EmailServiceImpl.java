@@ -26,7 +26,6 @@ public class EmailServiceImpl{
             String subject = "Verification Code";
             String text = "Your One Time Password is: "+ otp;
 
-            System.out.println("akshay shinde __________________________________________________");
     
             mimeMessageHelper.setSubject(subject);
             mimeMessageHelper.setText(text,true);

@@ -1,5 +1,6 @@
 package com.coupons.request;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ public class CouponRequest {
 
     public String couponName;
     public String couponDescription;
-    public int couponDiscount;
+    public BigDecimal price;
     public LocalDate expirationDate;
     public String couponCode;
     public String categoryName;

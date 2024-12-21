@@ -123,7 +123,7 @@ public class CouponController {
 
         couponService.deleteCoupon(couponId);
 
-        MessageResponse message = new MessageResponse("Project Deleted SuccessFully");
+        MessageResponse message = new MessageResponse("Coupon Deleted SuccessFully");
 
         return new ResponseEntity<>(message,HttpStatus.OK);
     }
@@ -142,15 +142,15 @@ public class CouponController {
 
 
     // get coupons discount is greater or equal
-    @GetMapping("/search/{discount}")
-    public ResponseEntity<List<Coupon>> getDiscountCoupons(
-        @PathVariable int discount
-    ) throws CouponException{
+    // @GetMapping("/search/{discount}")
+    // public ResponseEntity<List<Coupon>> getDiscountCoupons(
+    //     @PathVariable int discount
+    // ) throws CouponException{
 
-       List<Coupon> coupons = couponService.getDiscountCoupons(discount);
+    //    List<Coupon> coupons = couponService.getDiscountCoupons(discount);
 
-        return new ResponseEntity<>(coupons,HttpStatus.OK);
-    }
+    //     return new ResponseEntity<>(coupons,HttpStatus.OK);
+    // }
 
 
     // get coupon by coupon code
@@ -167,16 +167,16 @@ public class CouponController {
 
 
     // get user favorite coupons
-    @GetMapping("/search/favorite")
-    public ResponseEntity<List<Coupon>> getCouponsFavoritedByUser(
-        @RequestHeader("Authorization") String jwt
-    ) throws UserException, CouponException{
+    // @GetMapping("/search/favorite")
+    // public ResponseEntity<List<Coupon>> getCouponsFavoritedByUser(
+    //     @RequestHeader("Authorization") String jwt
+    // ) throws UserException, CouponException{
 
-        User user = userService.findUserProfileByJwt(jwt);
-       List<Coupon> coupons = couponService.getCouponsFavoritedByUser(user.getId());
+    //     User user = userService.findUserProfileByJwt(jwt);
+    //    List<Coupon> coupons = couponService.getCouponsFavoritedByUser(user.getId());
 
-        return new ResponseEntity<>(coupons,HttpStatus.OK);
-    }
+    //     return new ResponseEntity<>(coupons,HttpStatus.OK);
+    // }
 
     // get user favorite coupons
     @GetMapping("/search/{couponId}/payment")

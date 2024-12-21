@@ -26,11 +26,11 @@ public interface CouponService {
 
     List<Coupon> getActiveCoupons(CouponStatus status) throws CouponException;
 
-    List<Coupon> getDiscountCoupons(int discount) throws CouponException;
+    // List<Coupon> getDiscountCoupons(int discount) throws CouponException;
 
     Optional<Coupon> getCouponsFromCouponCode(String couponCode) throws CouponException;
 
-    List<Coupon> getCouponsFavoritedByUser(Long userId) throws CouponException;
+    // List<Coupon> getCouponsFavoritedByUser(Long userId) throws CouponException;
 
     List<Coupon> getCouponsByPaymentStatus(Long couponId, User user, PaymentStatus paymentStatus) throws CouponException;
     

@@ -67,11 +67,11 @@ public class OAuthAuthenticationSuccessHandler implements AuthenticationSuccessH
 
         if (authorizedClient != null) {
             accessToken = authorizedClient.getAccessToken().getTokenValue();
-            System.out.println("Access Token : "+accessToken);
+            // System.out.println("Access Token : "+accessToken);
 
         }else{
 
-            System.out.println("No authorized client found!");
+            // System.out.println("No authorized client found!");
 
         }
 
@@ -120,7 +120,7 @@ public class OAuthAuthenticationSuccessHandler implements AuthenticationSuccessH
         User user2 = userRepo.findByEmail(user.getEmail());
         if (user2 == null) {
             userRepo.save(user);
-            System.out.println("user saved:" + user.getEmail());
+            // System.out.println("user saved:" + user.getEmail());
         }
 
         if(user2 == null){

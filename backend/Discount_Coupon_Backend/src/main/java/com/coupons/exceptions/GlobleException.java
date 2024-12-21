@@ -55,10 +55,24 @@ public class GlobleException {
         return new ResponseEntity<>(err,HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(CartException.class)
+    public ResponseEntity<ErrorDetails> cartExceptionHandler(CartException ee, WebRequest req){
+
+        ErrorDetails err = new ErrorDetails(ee.getMessage(),req.getDescription(false),LocalDateTime.now());
+        return new ResponseEntity<>(err,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(OrderException.class)
+    public ResponseEntity<ErrorDetails> orderExceptionHandler(OrderException ee, WebRequest req){
+
+        ErrorDetails err = new ErrorDetails(ee.getMessage(),req.getDescription(false),LocalDateTime.now());
+        return new ResponseEntity<>(err,HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ErrorDetails> invalidTokenExceptionHandler(InvalidTokenException ee, WebRequest req){
 
-        ErrorDetails err = new ErrorDetails(ee.getMessage(),"Unauthorized",LocalDateTime.now());
+        ErrorDetails err = new ErrorDetails(ee.getMessage(),"unauthorized!",LocalDateTime.now());
         return new ResponseEntity<>(err,HttpStatus.BAD_REQUEST);
     }
     

@@ -10,15 +10,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.coupons.config.JwtProvider;
-import com.coupons.enums.TokenType;
 import com.coupons.exceptions.TokenException;
 import com.coupons.models.User;
 import com.coupons.models.UserToken;
 import com.coupons.repositories.TokenRepository;
 import com.coupons.repositories.UserRepository;
 import com.coupons.response.AuthResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 
 
 import jakarta.servlet.http.HttpServletRequest;

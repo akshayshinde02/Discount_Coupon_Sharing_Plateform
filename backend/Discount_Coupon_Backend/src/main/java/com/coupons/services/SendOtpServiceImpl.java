@@ -60,7 +60,6 @@ public class SendOtpServiceImpl implements SendOtpService {
     try {
         OtpVerification otpRecord = otpRepository.findByEmailAndIsUsedFalse(email);
 
-        System.out.println(otpRecord);
 
         if (otpRecord == null) {
             throw new OTPException("Please resend otp, email not found or OTP might be used earlier: " + email);

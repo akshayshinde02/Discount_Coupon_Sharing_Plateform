@@ -38,8 +38,8 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     List<Coupon> findAllActiveCouponsByStatus(CouponStatus status);
 
     // fetch all coupons who's discount value is greater than or equals to input discount
-    @Query("SELECT c FROM Coupon c WHERE c.couponDiscount >= :discount")
-    List<Coupon> findAllWithDiscountGreaterThanEqual(int discount);
+    // @Query("SELECT c FROM Coupon c WHERE c.couponDiscount >= :discount")
+    // List<Coupon> findAllWithDiscountGreaterThanEqual(int discount);
 
     // fetch all coupons created date in between startDate and endDate
     @Query("SELECT c FROM Coupon c WHERE c.createdAt BETWEEN :startDate AND :endDate")
@@ -50,8 +50,8 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     Optional<Coupon> findByCouponCode(String couponCode);
 
     // fetch all coupons user favourites
-    @Query("SELECT c FROM Coupon c WHERE c.favorite.user.id = :userId")
-    List<Coupon> findAllFavoritedByUser(Long userId);
+    // @Query("SELECT c FROM Coupon c WHERE c.favorite.user.id = :userId")
+    // List<Coupon> findAllFavoritedByUser(Long userId);
 
     // fetch all coupons user favourites
     @Query("SELECT c FROM Coupon c WHERE c.id = :id AND c.user = :user AND c.paymentStatus = :paymentStatus")

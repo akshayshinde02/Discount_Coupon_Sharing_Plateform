@@ -26,6 +26,8 @@ import com.coupons.config.JwtProvider;
 import com.coupons.enums.AccountStatus;
 import com.coupons.enums.TokenType;
 import com.coupons.enums.UserRole;
+import com.coupons.exceptions.CartException;
+import com.coupons.exceptions.CouponException;
 import com.coupons.exceptions.EmailServiceException;
 import com.coupons.exceptions.OTPException;
 import com.coupons.exceptions.TokenException;
@@ -44,6 +46,7 @@ import com.coupons.response.AuthResponse;
 import com.coupons.services.CustomUserDetails;
 import com.coupons.services.EmailServiceImpl;
 import com.coupons.services.AuthTokenServiceImpl;
+import com.coupons.services.CartService;
 // import com.coupons.services.EmailService;
 import com.coupons.services.SendOtpService;
 
@@ -81,6 +84,9 @@ public class AuthController {
     @Autowired
     private AuthTokenServiceImpl authTokenService;
 
+    @Autowired
+    private CartService cartService;
+
     @PostMapping("/send-otp")
     public ResponseEntity<String> sentOtp(@RequestBody OtpRequest request) throws UserException, EmailServiceException {
 
@@ -115,7 +121,7 @@ public class AuthController {
     }
 
     @PostMapping("/siginup")
-    public ResponseEntity<AuthResponse> createUserHandler(@Validated @RequestBody User user) throws UserException {
+    public ResponseEntity<AuthResponse> createUserHandler(@Validated @RequestBody User user) throws UserException,CartException,CouponException {
 
         String email = user.getEmail();
         String password = user.getPassword();
@@ -138,6 +144,7 @@ public class AuthController {
         // }
 
         // creating user and saved to database
+        System.out.println("0--------------------------------"+password);
         User creatUser = User.builder()
                 .firstName(firstName)
                 .lastName(lastName)
@@ -150,7 +157,11 @@ public class AuthController {
                 .isverified(true)
                 .build();
 
-        userRepository.save(creatUser);
+        System.out.println("1--------------------------------"+creatUser.getFirstName()+creatUser.getPassword());
+
+        User savedUser = userRepository.save(creatUser);
+
+        cartService.createCartForUser(savedUser);
 
         // Getting User Roles
         Collection<? extends GrantedAuthority> authorities = creatUser.getRole().getAuthorities();
@@ -175,7 +186,7 @@ public class AuthController {
 
         // Generating and Sending Authentication Response.
         AuthResponse auth = new AuthResponse(token, refreshToken, creatUser.isIsverified());
-        System.out.println("success" + auth.getJwt());
+        // System.out.println("success" + auth.getJwt());
 
         return new ResponseEntity<AuthResponse>(auth, HttpStatus.OK);
 
