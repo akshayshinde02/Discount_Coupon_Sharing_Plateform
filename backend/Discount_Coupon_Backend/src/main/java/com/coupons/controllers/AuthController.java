@@ -137,11 +137,11 @@ public class AuthController {
         }
 
         // Verifing that the user email is being verified by email
-        // Optional<OtpVerification> verifiedUser = otpRepository.findByEmailIgnoreCase(email);
+        Optional<OtpVerification> verifiedUser = otpRepository.findByEmailIgnoreCase(email);
 
-        // if (verifiedUser.isEmpty() || !verifiedUser.get().getIsUsed()) {
-        //     throw new UserException("Email verification is required before signing up");
-        // }
+        if (verifiedUser.isEmpty() || !verifiedUser.get().getIsUsed()) {
+            throw new UserException("Email verification is required before signing up");
+        }
 
         // creating user and saved to database
         System.out.println("0--------------------------------"+password);
