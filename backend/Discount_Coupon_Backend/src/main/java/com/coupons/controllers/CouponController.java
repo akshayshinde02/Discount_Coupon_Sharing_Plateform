@@ -30,7 +30,7 @@ import com.coupons.services.CouponService;
 import com.coupons.services.UserService;
 
 @RestController
-@RequestMapping("/api/coupons")
+@RequestMapping("/user/coupons")
 public class CouponController {
 
     @Autowired

@@ -22,58 +22,121 @@ import java.util.List;
 import java.util.Set;
 
 
-
 @RestController
-@RequestMapping("/api/cart")
+@RequestMapping("/user/cart")
 public class CartController {
+	
+	private CartService cartService;
+	private UserService userService;
+	
+	public CartController(CartService cartService,UserService userService) {
+		this.cartService=cartService;
+		this.userService=userService;
+	}
+	
+	@GetMapping("/")
+	public ResponseEntity<Cart> findUserCartHandler(@RequestHeader("Authorization") String jwt) throws UserException{
+		
+		User user=userService.findUserProfileByJwt(jwt);
+		
+		Cart cart=cartService.findUserCart(user.getId());
+		
+		System.out.println("cart - "+cart.getUser().getEmail());
+		
+		return new ResponseEntity<Cart>(cart,HttpStatus.OK);
+	}
+	
+	@PutMapping("/add")
+	public ResponseEntity<ApiResponse> addItemToCart(@RequestBody CartRequest req, @RequestHeader("Authorization") String jwt) throws UserException, CouponException{
+		
+		User user=userService.findUserProfileByJwt(jwt);
+		
+		cartService.addCartItem(user.getId(), req);
+		
+		ApiResponse res= new ApiResponse("Item Added To Cart Successfully",true);
+		
+		return new ResponseEntity<ApiResponse>(res,HttpStatus.ACCEPTED);
+		
+	}
+	
 
-    @Autowired
-    private CartService cartService;
 
-    @Autowired 
-    private UserService userService;
 
-    @PostMapping("/{cartId}/coupons/{couponId}")
-    public ResponseEntity<Cart> addCoupon(@PathVariable Long cartId, @PathVariable Long couponId) throws CouponException, CartException{
-        try {
-            Cart updatedCart = cartService.addCouponToCart(cartId, couponId);
-            return ResponseEntity.ok(updatedCart);
-        } catch (CartException e) {
-            throw new CartException("Cart not found, Coupon not added to Cart!");
-        }
-    }
 
-    @DeleteMapping("/{cartId}/coupons/{couponId}")
-    public ResponseEntity<Cart> removeCoupon(@PathVariable Long cartId, @PathVariable Long couponId) throws CartException{
-        try {
-            Cart updatedCart = cartService.removeCouponFromCart(cartId, couponId);
-            return ResponseEntity.ok(updatedCart);
-        } catch (CartException e) {
-            throw new CartException("Invalid cartId or couponId, Coupon cannot being removed!");
-        }
-    }
 
-     // Get all coupons in the cart
-     @GetMapping("/{cartId}/coupons")
-     public ResponseEntity<Set<Coupon>> getCoupons(@PathVariable Long cartId) throws CartException{
-         try {
-             Set<Coupon> coupons = cartService.getCouponsInCart(cartId);
-             return ResponseEntity.ok(coupons);
-         } catch (CartException e) {
-            throw new CartException("Invalid cartId, Coupons in cart not found!");
-         }
-     }
+// @RestController
+// @RequestMapping("/api/cart")
+// public class CartController {
+
+//     @Autowired
+//     private CartService cartService;
+
+//     @Autowired 
+//     private UserService userService;
+
+//     @PostMapping("/{cartId}/coupons/{couponId}")
+//     public ResponseEntity<Cart> addCoupon(@PathVariable Long cartId, @PathVariable Long couponId) throws CouponException, CartException{
+//         try {
+//             Cart updatedCart = cartService.addCouponToCart(cartId, couponId);
+//             return ResponseEntity.ok(updatedCart);
+//         } catch (CartException e) {
+//             throw new CartException("Cart not found, Coupon not added to Cart!");
+//         }
+//     }
+
+//     @DeleteMapping("/{cartId}/coupons/{couponId}")
+//     public ResponseEntity<Cart> removeCoupon(@PathVariable Long cartId, @PathVariable Long couponId) throws CartException{
+//         try {
+//             Cart updatedCart = cartService.removeCouponFromCart(cartId, couponId);
+//             return ResponseEntity.ok(updatedCart);
+//         } catch (CartException e) {
+//             throw new CartException("Invalid cartId or couponId, Coupon cannot being removed!");
+//         }
+//     }
+
+//      // Get all coupons in the cart
+//      @GetMapping("/{cartId}/coupons")
+//      public ResponseEntity<Set<Coupon>> getCoupons(@PathVariable Long cartId) throws CartException{
+//          try {
+//              Set<Coupon> coupons = cartService.getCouponsInCart(cartId);
+//              return ResponseEntity.ok(coupons);
+//          } catch (CartException e) {
+//             throw new CartException("Invalid cartId, Coupons in cart not found!");
+//          }
+//      }
  
-     // Get cart by ID
-     @GetMapping("/{cartId}")
-     public ResponseEntity<Cart> getCart(@PathVariable Long cartId) throws CartException{
-         try {
-             Cart cart = cartService.getCart(cartId);
-             return ResponseEntity.ok(cart);
-         } catch (CartException e) {
-            throw new CartException("Cart not found for user!");
-         }
-     }
+//      // Get cart by ID
+//      @GetMapping("/{cartId}")
+//      public ResponseEntity<Cart> getCart(@PathVariable Long cartId) throws CartException{
+//          try {
+//              Cart cart = cartService.getCart(cartId);
+//              return ResponseEntity.ok(cart);
+//          } catch (CartException e) {
+//             throw new CartException("Cart not found for user!");
+//          }
+//      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 
     // @GetMapping("{cartId}/my-cart")

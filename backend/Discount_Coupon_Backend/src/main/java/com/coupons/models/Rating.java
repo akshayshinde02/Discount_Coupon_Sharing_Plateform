@@ -5,45 +5,46 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import lombok.ToString;
+import jakarta.persistence.Table;
 
 @Entity
-public class Review {
+@Table(name = "rating")
+public class Rating {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String review;
-
-    @ManyToOne
-    @JoinColumn(name="coupon_id")
-    @JsonIgnore
-    private Coupon coupon;
-
-    @ManyToOne
-    @JoinColumn(name="user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
 	@JsonIgnore
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_id")
+	@JsonIgnore
+    private Coupon coupon;
+
+    private double rating;
+
     private LocalDateTime createdAt;
 
-    public Review() {
-		
+    public Rating() {
+		// TODO Auto-generated constructor stub
 	}
 
-	public Review(Long id, String review, Coupon coupon, User user, LocalDateTime createdAt) {
+	public Rating(Long id, User user, Coupon coupon, double rating, LocalDateTime createdAt) {
 		super();
 		this.id = id;
-		this.review = review;
-		this.coupon = coupon;
 		this.user = user;
+		this.coupon = coupon;
+		this.rating = rating;
 		this.createdAt = createdAt;
 	}
 
@@ -55,14 +56,6 @@ public class Review {
 		this.createdAt = createdAt;
 	}
 
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
 	public Long getId() {
 		return id;
 	}
@@ -71,12 +64,12 @@ public class Review {
 		this.id = id;
 	}
 
-	public String getReview() {
-		return review;
+	public User getUser() {
+		return user;
 	}
 
-	public void setReview(String review) {
-		this.review = review;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public Coupon getCoupon() {
@@ -86,6 +79,14 @@ public class Review {
 	public void setCoupon(Coupon coupon) {
 		this.coupon = coupon;
 	}
-	
 
+	public double getRating() {
+		return rating;
+	}
+
+	public void setRating(double rating) {
+		this.rating = rating;
+	}
+
+  
 }

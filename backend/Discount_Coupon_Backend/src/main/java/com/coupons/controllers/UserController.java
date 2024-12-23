@@ -13,7 +13,7 @@ import com.coupons.models.User;
 import com.coupons.services.UserService;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user/user")
 public class UserController {
 
     @Autowired

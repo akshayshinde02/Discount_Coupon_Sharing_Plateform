@@ -40,7 +40,8 @@ public class Coupon {
     private String couponName;
     private String couponDescription;
     private String category;
-    private BigDecimal price;
+    // private BigDecimal price;
+    private Integer price;
     // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate expirationDate;
     private PaymentStatus paymentStatus;
@@ -52,21 +53,24 @@ public class Coupon {
     private boolean termsAccepted = false;  
 
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Rating> ratings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Review> reviews = new ArrayList<>();
 
     @ManyToOne
     @JsonBackReference
     private User user;   
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cart_id")
-    @JsonIgnore
-    private Cart cart;
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "cart_id")
+    // @JsonIgnore
+    // private Cart cart;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    @JsonIgnore
-    private Order order;
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "order_id")
+    // @JsonIgnore
+    // private Order order;
 
 
     private LocalDateTime createdAt;

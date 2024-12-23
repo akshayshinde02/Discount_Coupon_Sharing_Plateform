@@ -14,7 +14,7 @@ public class CouponRequest {
 
     public String couponName;
     public String couponDescription;
-    public BigDecimal price;
+    public Integer price;
     public LocalDate expirationDate;
     public String couponCode;
     public String categoryName;

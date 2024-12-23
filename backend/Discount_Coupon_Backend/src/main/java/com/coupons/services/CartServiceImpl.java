@@ -1,119 +1,201 @@
 package com.coupons.services;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-// import com.coupons.dtos.CartDto;
-// import com.coupons.dtos.CartItemDto;
-import com.coupons.exceptions.CartException;
 import com.coupons.exceptions.CouponException;
-import com.coupons.exceptions.UserException;
 import com.coupons.models.Cart;
+import com.coupons.models.CartItem;
 import com.coupons.models.Coupon;
 import com.coupons.models.User;
 import com.coupons.repositories.CartRepository;
-
-import lombok.RequiredArgsConstructor;
+import com.coupons.request.CartRequest;
 
 @Service
-@RequiredArgsConstructor
-public class CartServiceImpl implements CartService {
+public class CartServiceImpl implements CartService{
+	
+	private CartRepository cartRepository;
+	private CartItemService cartItemService;
+	private CouponService couponService;
+	
+	
+	public CartServiceImpl(CartRepository cartRepository,CartItemService cartItemService,
+    CouponService couponService) {
+		this.cartRepository=cartRepository;
+		this.couponService=couponService;
+		this.cartItemService=cartItemService;
+	}
 
-    @Autowired
-    private CartRepository cartRepository;
+	@Override
+	public Cart createCart(User user) {
+		
+		Cart cart = new Cart();
+		cart.setUser(user);
+		Cart createdCart=cartRepository.save(cart);
+		return createdCart;
+	}
+	
+	public Cart findUserCart(Long userId) {
+		Cart cart =	cartRepository.findByUserId(userId);
+		int totalPrice=0;
+		int totalItem=0;
+		for(CartItem cartsItem : cart.getCartItems()) {
+			totalPrice+=cartsItem.getPrice();
+			totalItem+=cartsItem.getQuantity();
+		}
+		
+		cart.setTotalPrice(totalPrice);
+		cart.setTotalItem(cart.getCartItems().size());
+		cart.setTotalItem(totalItem);
+		
+		return cartRepository.save(cart);
+		
+	}
 
-    @Autowired
-    private CouponService couponService;
+	@Override
+	public String addCartItem(Long userId, CartRequest req) throws CouponException {
+		Cart cart=cartRepository.findByUserId(userId);
 
-    @Override
-    public Cart createCartForUser(User user) throws UserException {
+		Coupon coupon=couponService.getSingleCoupon(req.getCouponId());
+		
+		CartItem isPresent=cartItemService.isCartItemExist(cart, coupon,userId);
+		
+		if(isPresent == null) {
+			CartItem cartItem = new CartItem();
+			cartItem.setCoupon(coupon);
+			cartItem.setCart(cart);
+			cartItem.setQuantity(1);
+			cartItem.setUserId(userId);
+			
+			
+			int price=req.getPrice();
+			cartItem.setPrice(price);
+			
+			CartItem createdCartItem=cartItemService.createCartItem(cartItem);
+			cart.getCartItems().add(createdCartItem);
+		}
+		
+		
+		return "Item Add To Cart";
+	}
+
+
+// import java.math.BigDecimal;
+// import java.time.LocalDateTime;
+// import java.util.HashSet;
+// import java.util.Optional;
+// import java.util.Set;
+// import java.util.stream.Collectors;
+
+// import org.hibernate.Hibernate;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.stereotype.Service;
+// import org.springframework.transaction.annotation.Transactional;
+
+// // import com.coupons.dtos.CartDto;
+// // import com.coupons.dtos.CartItemDto;
+// import com.coupons.exceptions.CartException;
+// import com.coupons.exceptions.CouponException;
+// import com.coupons.exceptions.UserException;
+// import com.coupons.models.Cart;
+// import com.coupons.models.Coupon;
+// import com.coupons.models.User;
+// import com.coupons.repositories.CartRepository;
+
+// import lombok.RequiredArgsConstructor;
+
+// @Service
+// @RequiredArgsConstructor
+// public class CartServiceImpl implements CartService {
+
+//     @Autowired
+//     private CartRepository cartRepository;
+
+//     @Autowired
+//     private CouponService couponService;
+
+//     @Override
+//     public Cart createCartForUser(User user) throws UserException {
         
-        Cart cart = new Cart();
-        cart.setUser(user);
+//         Cart cart = new Cart();
+//         cart.setUser(user);
 
-        return cartRepository.save(cart);
-    }
+//         return cartRepository.save(cart);
+//     }
 
 
-    @Override
-    public Cart addCouponToCart(Long cartId, Long couponId) throws CartException,CouponException {
+//     @Override
+//     public Cart addCouponToCart(Long cartId, Long couponId) throws CartException,CouponException {
         
-        Cart cart = getCart(cartId);
+//         Cart cart = getCart(cartId);
 
-        if(cart==null){
-            throw new CartException("No cart found for given id!!");
-        }
+//         if(cart==null){
+//             throw new CartException("No cart found for given id!!");
+//         }
 
-        Coupon coupon = couponService.getSingleCoupon(couponId);
-        if(coupon==null){
-            throw new CouponException("No coupon found for given id!!");
-        }
+//         Coupon coupon = couponService.getSingleCoupon(couponId);
+//         if(coupon==null){
+//             throw new CouponException("No coupon found for given id!!");
+//         }
 
-        if(cart.getCoupons().contains(coupon)){
-            throw new CouponException("Coupon is already in the cart!!");
-        }
+//         if(cart.getCoupons().contains(coupon)){
+//             throw new CouponException("Coupon is already in the cart!!");
+//         }
 
-        cart.addCoupon(coupon); 
-        // coupon.setCart(cart);
+//         cart.addCoupon(coupon); 
+//         // coupon.setCart(cart);
 
-        return cartRepository.save(cart);
-    }
+//         return cartRepository.save(cart);
+//     }
 
-    @Override
-    public Cart removeCouponFromCart(Long cartId, Long couponId) throws CartException {
+//     @Override
+//     public Cart removeCouponFromCart(Long cartId, Long couponId) throws CartException {
        
-        Cart cart = getCart(cartId);
+//         Cart cart = getCart(cartId);
 
-        if(cart==null){
-            throw new CartException("No cart found for given id!!");
-        }
-        Coupon couponToRemove = cart.getCoupons().stream()
-        .filter(c-> c.getId().equals(couponId))
-        .findFirst()
-        .orElseThrow(() -> new CartException("Coupon not Found in the cart!"));
+//         if(cart==null){
+//             throw new CartException("No cart found for given id!!");
+//         }
+//         Coupon couponToRemove = cart.getCoupons().stream()
+//         .filter(c-> c.getId().equals(couponId))
+//         .findFirst()
+//         .orElseThrow(() -> new CartException("Coupon not Found in the cart!"));
 
-        cart.removeCoupon(couponToRemove);
-        return cartRepository.save(cart);
-    }
+//         cart.removeCoupon(couponToRemove);
+//         return cartRepository.save(cart);
+//     }
 
-    @Override
-    public Set<Coupon> getCouponsInCart(Long cartId) throws CartException {
+//     @Override
+//     public Set<Coupon> getCouponsInCart(Long cartId) throws CartException {
       
-        Set<Coupon> coupons = getCart(cartId).getCoupons();
+//         Set<Coupon> coupons = getCart(cartId).getCoupons();
 
-        if(coupons==null){
-            throw new CartException("No coupons found for given cartid!!");
-        }
+//         if(coupons==null){
+//             throw new CartException("No coupons found for given cartid!!");
+//         }
 
-        return coupons;
-    }
+//         return coupons;
+//     }
 
-    @Override
-    public Cart getCart(Long cartId) throws CartException {
-       return cartRepository.findById(cartId)
-       .orElseThrow(()-> new CartException("Cart not found!"));
-    }
+//     @Override
+//     public Cart getCart(Long cartId) throws CartException {
+//        return cartRepository.findById(cartId)
+//        .orElseThrow(()-> new CartException("Cart not found!"));
+//     }
 
 
-    @Override
-    public Cart findUserCart(Long userId) {
+//     @Override
+//     public Cart findUserCart(Long userId) {
         
-       return cartRepository.findByUserId(userId);
-    }
+//        return cartRepository.findByUserId(userId);
+//     }
 
-    public Cart saveCart(Cart cart) {
-        return cartRepository.save(cart);
-    }
+//     public Cart saveCart(Cart cart) {
+//         return cartRepository.save(cart);
+//     }
 
+
+
+// (=----------------------------------------------------------------------------------------------------------)
     
 
     // @Override

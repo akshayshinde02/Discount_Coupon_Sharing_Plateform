@@ -15,7 +15,7 @@ public interface OrderRepository extends JpaRepository<Order,Long>{
     @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND o.orderStatus = CONFIRMED")
     public List<Order> getUsersOrders(Long userId);
     
-    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderCoupons WHERE o.id = :orderId")
+    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderItems WHERE o.id = :orderId")
     Optional<Order> findByIdWithCoupons(@Param("orderId") Long orderId);
 
 }

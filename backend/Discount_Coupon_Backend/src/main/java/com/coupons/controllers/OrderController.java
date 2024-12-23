@@ -22,29 +22,29 @@ import com.coupons.services.OrderService;
 import com.coupons.services.UserService;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/user/orders")
 public class OrderController {
-
-    @Autowired
-    private OrderService orderService;
-
-    @Autowired
-    private UserService userService;
-
-    @PostMapping("/")
-	public ResponseEntity<OrderDto> createOrderHandler(
-			@RequestHeader("Authorization")String jwt) throws UserException,OrderException{
+	
+	private OrderService orderService;
+	private UserService userService;
+	
+	public OrderController(OrderService orderService,UserService userService) {
+		this.orderService=orderService;
+		this.userService=userService;
+	}
+	
+	@PostMapping("/")
+	public ResponseEntity<Order> createOrderHandler(
+			@RequestHeader("Authorization")String jwt) throws UserException{
 		
 		User user=userService.findUserProfileByJwt(jwt);
-		OrderDto order =orderService.createOrder(user);
+		Order order =orderService.createOrder(user);
 		
-		return new ResponseEntity<OrderDto>(order,HttpStatus.OK);
+		return new ResponseEntity<Order>(order,HttpStatus.OK);
 		
 	}
-
-    
-
-    @GetMapping("/user")
+	
+	@GetMapping("/user")
 	public ResponseEntity< List<Order>> usersOrderHistoryHandler(@RequestHeader("Authorization") 
 	String jwt) throws OrderException, UserException{
 		
@@ -61,4 +61,48 @@ public class OrderController {
 		Order orders=orderService.findOrderById(orderId);
 		return new ResponseEntity<>(orders,HttpStatus.ACCEPTED);
 	}
+
 }
+
+
+// @RestController
+// @RequestMapping("/api/orders")
+// public class OrderController {
+
+//     @Autowired
+//     private OrderService orderService;
+
+//     @Autowired
+//     private UserService userService;
+
+//     @PostMapping("/")
+// 	public ResponseEntity<OrderDto> createOrderHandler(
+// 			@RequestHeader("Authorization")String jwt) throws UserException,OrderException{
+		
+// 		User user=userService.findUserProfileByJwt(jwt);
+// 		OrderDto order =orderService.createOrder(user);
+		
+// 		return new ResponseEntity<OrderDto>(order,HttpStatus.OK);
+		
+// 	}
+
+    
+
+//     @GetMapping("/user")
+// 	public ResponseEntity< List<Order>> usersOrderHistoryHandler(@RequestHeader("Authorization") 
+// 	String jwt) throws OrderException, UserException{
+		
+// 		User user=userService.findUserProfileByJwt(jwt);
+// 		List<Order> orders=orderService.usersOrderHistory(user.getId());
+// 		return new ResponseEntity<>(orders,HttpStatus.ACCEPTED);
+// 	}
+	
+// 	@GetMapping("/{orderId}")
+// 	public ResponseEntity< Order> findOrderHandler(@PathVariable Long orderId, @RequestHeader("Authorization") 
+// 	String jwt) throws OrderException, UserException{
+		
+// 		User user=userService.findUserProfileByJwt(jwt);
+// 		Order orders=orderService.findOrderById(orderId);
+// 		return new ResponseEntity<>(orders,HttpStatus.ACCEPTED);
+// 	}
+// }

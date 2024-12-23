@@ -33,5 +33,7 @@ public interface CouponService {
     // List<Coupon> getCouponsFavoritedByUser(Long userId) throws CouponException;
 
     List<Coupon> getCouponsByPaymentStatus(Long couponId, User user, PaymentStatus paymentStatus) throws CouponException;
+
+    public List<Coupon> getAllCoupons();
     
 }

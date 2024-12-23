@@ -32,61 +32,128 @@ import lombok.NoArgsConstructor;
 
 @Entity
 // @Data
-@AllArgsConstructor
-@NoArgsConstructor
+// @AllArgsConstructor
+// @NoArgsConstructor
 public class Cart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private BigDecimal totalPrice = BigDecimal.ZERO;
-
-    // @JoinColumn(name = "cart_id")
-    @OneToMany(mappedBy = "cart", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JsonProperty("couponscart")
-    private Set<Coupon> cartCoupons = new HashSet<>();
-
-
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    // @JsonIgnore
     private User user;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "cart_items")
+    private Set<CartItem> cartItems = new HashSet<>();
+
+    @Column(name = "total_price")
+    private double totalPrice;
+    
+    @Column(name="total_item")
+    private int totalItem;
+
+    public Cart() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Cart(Long id, User user, Set<CartItem> cartItems, double totalPrice, int totalItem) {
+		super();
+		this.id = id;
+		this.user = user;
+		this.cartItems = cartItems;
+		this.totalPrice = totalPrice;
+		this.totalItem = totalItem;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Set<CartItem> getCartItems() {
+		return cartItems;
+	}
+
+	public void setCartItems(Set<CartItem> cartItems) {
+		this.cartItems = cartItems;
+	}
+
+	public double getTotalPrice() {
+		return totalPrice;
+	}
+
+	public void setTotalPrice(double totalPrice) {
+		this.totalPrice = totalPrice;
+	}
+
+	public int getTotalItem() {
+		return totalItem;
+	}
+
+	public void setTotalItem(int totalItem) {
+		this.totalItem = totalItem;
+	}
+
+    // private BigDecimal totalPrice = BigDecimal.ZERO;
+
+    // // @JoinColumn(name = "cart_id")
+    // @OneToMany(mappedBy = "cart", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    // @JsonProperty("couponscart")
+    // private Set<Coupon> cartCoupons = new HashSet<>();
+
+
+    // @OneToOne
+    // @JoinColumn(name = "user_id")
+    // // @JsonIgnore
+    // private User user;
+
+    // private LocalDateTime createdAt = LocalDateTime.now();
 
     
 
-    public void addCoupon(Coupon coupon) {
-        this.cartCoupons.add(coupon);
-        coupon.setCart(this);
-        updateTotalAmount();
-    }
+    // public void addCoupon(Coupon coupon) {
+    //     this.cartCoupons.add(coupon);
+    //     coupon.setCart(this);
+    //     updateTotalAmount();
+    // }
 
-    public void removeCoupon(Coupon coupon){
-        this.cartCoupons.remove(coupon);
-        coupon.setCart(null);
-        updateTotalAmount();
-    }
+    // public void removeCoupon(Coupon coupon){
+    //     this.cartCoupons.remove(coupon);
+    //     coupon.setCart(null);
+    //     updateTotalAmount();
+    // }
     
-    public User getUser(){
-       return this.user;
-    }
+    // public User getUser(){
+    //    return this.user;
+    // }
 
-    @JsonProperty("couponscart")
-    public Set<Coupon> getCoupons(){
-       return this.cartCoupons;
-    }
+    // @JsonProperty("couponscart")
+    // public Set<Coupon> getCoupons(){
+    //    return this.cartCoupons;
+    // }
 
-    public void setUser(User user){
-       this.user = user;
-    }
+    // public void setUser(User user){
+    //    this.user = user;
+    // }
 
-    private void updateTotalAmount() {
-        this.totalPrice = cartCoupons.stream().
-        map(Coupon::getPrice)
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+    // private void updateTotalAmount() {
+    //     this.totalPrice = cartCoupons.stream().
+    //     map(Coupon::getPrice)
+    //     .reduce(BigDecimal.ZERO, BigDecimal::add);
+    // }
 
 
 

@@ -54,7 +54,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("/api/public/")
+@RequestMapping("/public/")
 public class AuthController {
 
     @Autowired
@@ -161,7 +161,9 @@ public class AuthController {
 
         User savedUser = userRepository.save(creatUser);
 
-        cartService.createCartForUser(savedUser);
+        // cartService.createCartForUser(savedUser);
+
+        cartService.createCart(savedUser);
 
         // Getting User Roles
         Collection<? extends GrantedAuthority> authorities = creatUser.getRole().getAuthorities();

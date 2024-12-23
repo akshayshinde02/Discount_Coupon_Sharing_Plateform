@@ -206,4 +206,9 @@ public class CouponServiceImpl implements CouponService {
                 return coupons;
     }
 
+    @Override
+	public List<Coupon> getAllCoupons() {
+		return couponRepository.findAll();
+	}
+
 }
